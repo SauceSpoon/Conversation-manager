@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>NODE</title>
+<style>
+  html, body {
+    margin: 0;
+    height: 100%;
+    overflow: hidden;
+    background: #f5f5f5;
+    font-family: -apple-system, "Segoe UI", sans-serif;
+  }
+  canvas {
+    display: block;
+    position: fixed;
+    top: 0;
+    left: 0;
+  }
+  #bg-layer { z-index: 0; pointer-events: none; }
+  #grid { z-index: 1; pointer-events: none; }
+
+  .hint {
+    position: fixed;
+    top: 12px;
+    left: calc(50% + 90px);
+    transform: translateX(-50%);
+    z-index: 10;
+    padding: 6px 14px;
+    background: rgba(0, 0, 0, .65);
+    color: #fff;
+    font: 13px/1.5 sans-serif;
+    border-radius: 6px;
+    user-select: none;
+    pointer-events: none;
+  }
+</style>
+<link rel="stylesheet" href="Node/node_style.css">
+<link rel="stylesheet" href="Node/AI/ai_style.css">
+<link rel="stylesheet" href="Node/AI/file_handler/file_style.css">
+<link rel="stylesheet" href="Menu/sidebar_style.css">
+<link rel="stylesheet" href="Toolbar/toolbar_style.css">
+</head>
+<body>
+
+<canvas id="bg-layer"></canvas>
+<canvas id="grid"></canvas>
+<div id="node-layer"></div>
+<div id="context-menu">
+  <div class="context-menu-item" data-action="create-node">创建节点</div>
+</div>
+<div class="hint">右键创建节点 · WASD 或中键拖动平移 · 滚轮缩放</div>
+<div id="bottom-toolbar"></div>
+
+<script>
+const gridCanvas = document.getElementById('grid');
+const gctx = gridCanvas.getContext('2d');
+const bgCanvas = document.getElementById('bg-layer');
+const bgCtx = bgCanvas.getContext('2d');
+
+// ========== 背景图状态 ==========
+let currentBackground = null;  // { base64, opacity } 或 null
+const bgImage = new Image();
+
+window.setBackground = (bg) => {
+  currentBackground = bg;
+  if (bg && bg.base64) {
+    bgImage.onload = () => render();
+    bgImage.src = bg.base64;
+  } else {
+    bgImage.src = '';
+    render();
+  }
+};
+
+function drawBackground() {
+  const dpr = devicePixelRatio || 1;
+  // 先清屏（无论当前是否有背景，都清掉旧绘制 → 清除背景时画面不留残留）
+  bgCtx.setTransform(1, 0, 0, 1, 0, 0);
+  bgCtx.clearRect(0, 0, bgCanvas.width, bgCanvas.height);
+  if (!currentBackground || !bgImage.complete || !bgImage.naturalWidth) return;
+  // 背景固定在屏幕上：只用 dpr 缩放，不应用 view 变换 → 平移/缩放画布时背景不动
+  bgCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+  // cover 方式：保持比例铺满整个屏幕（像桌面壁纸）
+  const imgW = bgImage.naturalWidth;
+  const imgH = bgImage.naturalHeight;
+  const screenW = innerWidth;
+  const screenH = innerHeight;
+  const scale = Math.max(screenW / imgW, screenH / imgH);
+  const drawW = imgW * scale;
+  const drawH = imgH * scale;
+  const x = (screenW - drawW) / 2;
+  const y = (screenH - drawH) / 2;
+
+  bgCtx.globalAlpha = currentBackground.opacity;
+  bgCtx.drawImage(bgImage, x, y, drawW, drawH);
+  bgCtx.globalAlpha = 1;
+}
+
+// ========== 视图变换状态 ==========
+const view = { scale: 1, offsetX: 0, offsetY: 0 };
+window.view = view;
+
+// ========== 坐标换算 ==========
+function screenToWorld(sx, sy) {
+  return { x: sx / view.scale + view.offsetX, y: sy / view.scale + view.offsetY };
+}
+
+// ========== 画布尺寸自适应（处理高 DPI） ==========
+function resize() {
+  const dpr = devicePixelRatio || 1;
+  gridCanvas.width = innerWidth * dpr;
+  gridCanvas.height = innerHeight * dpr;
+  gridCanvas.style.width = innerWidth + 'px';
+  gridCanvas.style.height = innerHeight + 'px';
+  bgCanvas.width = innerWidth * dpr;
+  bgCanvas.height = innerHeight * dpr;
+  bgCanvas.style.width = innerWidth + 'px';
+  bgCanvas.style.height = innerHeight + 'px';
+  render();
+}
+addEventListener('resize', resize);
+
+// ========== 渲染 ==========
+function applyWorldTransform(c, dpr) {
+  c.setTransform(
+    view.scale * dpr, 0,
+    0, view.scale * dpr,
+    -view.offsetX * view.scale * dpr,
+    -view.offsetY * view.scale * dpr
+  );
+}
+
+function render() {
+  const dpr = devicePixelRatio || 1;
+
+  // 先画背景图（最底层）
+  drawBackground();
+
+  gctx.setTransform(1, 0, 0, 1, 0, 0);
+  gctx.clearRect(0, 0, gridCanvas.width, gridCanvas.height);
+  applyWorldTransform(gctx, dpr);
+  drawGrid();
+
+  if (window._nodeManager) window._nodeManager.updateAllPositions();
+  if (window._edgeRenderer) window._edgeRenderer.render();
+}
+
+function drawGrid() {
+  const step = 100;
+  const left = view.offsetX;
+  const top = view.offsetY;
+  const right = view.offsetX + innerWidth / view.scale;
+  const bottom = view.offsetY + innerHeight / view.scale;
+  gctx.strokeStyle = '#e2e2e2';
+  gctx.lineWidth = 1 / view.scale;
+  gctx.beginPath();
+  for (let x = Math.floor(left / step) * step; x <= right; x += step) {
+    gctx.moveTo(x, top); gctx.lineTo(x, bottom);
+  }
+  for (let y = Math.floor(top / step) * step; y <= bottom; y += step) {
+    gctx.moveTo(left, y); gctx.lineTo(right, y);
+  }
+  gctx.stroke();
+}
+
+// ========== 中键拖动平移 ==========
+let panning = false;
+let lastPan = { x: 0, y: 0 };
+
+addEventListener('mousedown', (e) => {
+  if (e.button === 1) {
+    panning = true;
+    lastPan = { x: e.clientX, y: e.clientY };
+    document.body.style.cursor = 'grabbing';
+    e.preventDefault();
+  }
+});
+
+addEventListener('mousemove', (e) => {
+  if (panning) {
+    const dx = e.clientX - lastPan.x;
+    const dy = e.clientY - lastPan.y;
+    view.offsetX -= dx / view.scale;
+    view.offsetY -= dy / view.scale;
+    lastPan = { x: e.clientX, y: e.clientY };
+    render();
+  }
+});
+
+addEventListener('mouseup', () => {
+  if (panning) {
+    panning = false;
+    document.body.style.cursor = '';
+  }
+});
+
+// ========== 滚轮缩放 ==========
+addEventListener('wheel', (e) => {
+  e.preventDefault();
+  const sx = e.clientX;
+  const sy = e.clientY;
+  const factor = Math.exp(-e.deltaY * 0.0015);
+  const newScale = Math.min(8, Math.max(0.1, view.scale * factor));
+  const world = screenToWorld(sx, sy);
+  view.scale = newScale;
+  view.offsetX = world.x - sx / view.scale;
+  view.offsetY = world.y - sy / view.scale;
+  render();
+}, { passive: false });
+
+// ========== WASD 键盘平移 ==========
+const keys = new Set();
+let panRAF = null;
+function panLoop() {
+  const step = 20 / view.scale;
+  if (keys.has('w')) view.offsetY -= step;
+  if (keys.has('s')) view.offsetY += step;
+  if (keys.has('a')) view.offsetX -= step;
+  if (keys.has('d')) view.offsetX += step;
+  render();
+  panRAF = keys.size ? requestAnimationFrame(panLoop) : null;
+}
+addEventListener('keydown', (e) => {
+  if (document.activeElement && document.activeElement.closest('.canvas-node')) return;
+  const k = e.key.toLowerCase();
+  if (k === 'w' || k === 'a' || k === 's' || k === 'd') {
+    keys.add(k);
+    if (!panRAF) panRAF = requestAnimationFrame(panLoop);
+    e.preventDefault();
+  }
+});
+addEventListener('keyup', (e) => {
+  keys.delete(e.key.toLowerCase());
+});
+
+resize();
+</script>
+<script type="module" src="main.js"></script>
+</body>
+</html>

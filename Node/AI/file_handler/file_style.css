@@ -1,0 +1,90 @@
+/* 附件样式（📎按钮、chip） */
+
+.ai-dialog-attach-area {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 14px 0;
+  background: #fff;
+  flex-wrap: wrap;
+}
+
+.ai-attach-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  background: #f0f2f5;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background .15s;
+  flex-shrink: 0;
+}
+
+.ai-attach-btn:hover {
+  background: #e2e6eb;
+}
+
+.ai-attach-chips {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+  flex: 1;
+}
+
+.ai-attach-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  background: #e8f0fe;
+  border: 1px solid #c5d8f6;
+  border-radius: 10px;
+  font-size: 11px;
+  color: #1976d2;
+  max-width: 220px;
+  line-height: 1.4;
+}
+
+.ai-attach-chip-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 100px;
+}
+
+.ai-attach-chip-remove {
+  cursor: pointer;
+  color: #8a9099;
+  font-size: 12px;
+  line-height: 1;
+  padding: 0 2px;
+}
+
+.ai-attach-chip-remove:hover {
+  color: #d33;
+}
+
+/* ========== 附件 chip 状态点 ========== */
+/* 状态点：颜色区分读取结果，让用户即时看到反馈 */
+.ai-attach-chip-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.ai-attach-chip-dot--ok    { background: #4caf50; }  /* 抽取成功，模型可读 */
+.ai-attach-chip-dot--fail  { background: #e53935; }  /* 抽取失败 */
+.ai-attach-chip-dot--none  { background: #9aa0a6; }  /* 不支持该文件类型 */
+.ai-attach-chip-dot--image { background: #fb8c00; }  /* 需多模态模型 */
+
+.ai-attach-chip-info {
+  font-size: 10px;
+  color: #6b7280;
+  max-width: 80px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

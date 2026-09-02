@@ -1,0 +1,263 @@
+/* ========== 侧边栏 ========== */
+#sidebar-wrap {
+  position: fixed;
+  left: 0;
+  top: 0;
+  height: 100%;
+  z-index: 15;
+  display: flex;
+}
+
+#sidebar {
+  height: 100%;
+  width: 180px;
+  background: #fff;
+  border-right: 1px solid #e0e0e0;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 2px 0 8px rgba(0,0,0,.05);
+  user-select: none;
+}
+
+/* 拖拽条：竖向拉动 */
+#sidebar-resizer {
+  width: 4px;
+  height: 100%;
+  cursor: ew-resize;
+  background: transparent;
+  transition: background .15s;
+  flex-shrink: 0;
+}
+#sidebar-resizer:hover { background: #409eff; }
+#sidebar-resizer.active { background: #409eff; }
+
+.sidebar-header {
+  padding: 16px;
+  font-size: 15px;
+  font-weight: 600;
+  color: #333;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.sidebar-items {
+  flex: 1;
+  padding: 8px;
+}
+
+.sidebar-btn {
+  display: block;
+  width: 100%;
+  padding: 10px 14px;
+  margin-bottom: 4px;
+  border: none;
+  background: transparent;
+  text-align: left;
+  font: 13px/1.4 -apple-system, "Segoe UI", sans-serif;
+  color: #333;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background .15s;
+}
+.sidebar-btn:hover { background: #f0f0f0; }
+
+.sidebar-footer {
+  padding: 8px;
+  border-top: 1px solid #f0f0f0;
+}
+
+/* ========== 设置面板 ========== */
+.settings-panel {
+  position: fixed;
+  bottom: 8px;
+  width: 260px;
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0,0,0,.15);
+  padding: 14px;
+  z-index: 16;
+  display: none;
+}
+.settings-panel.show { display: block; }
+
+.settings-panel label {
+  display: block;
+  font-size: 13px;
+  color: #555;
+  margin-bottom: 6px;
+}
+.settings-panel .dir-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.settings-panel .dir-name {
+  flex: 1;
+  font-size: 13px;
+  color: #999;
+  padding: 6px 8px;
+  background: #f5f5f5;
+  border-radius: 4px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.settings-panel .pick-btn {
+  padding: 6px 12px;
+  border: 1px solid #d0d0d0;
+  border-radius: 4px;
+  background: #fff;
+  font-size: 13px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.settings-panel .pick-btn:hover { background: #f0f0f0; }
+
+/* ========== 背景图设置面板 ========== */
+.bg-setting-panel {
+  position: fixed;
+  width: 320px;
+  background: #fff;
+  border: 1px solid #d0d0d0;
+  border-radius: 10px;
+  box-shadow: 0 8px 32px rgba(0,0,0,.18);
+  z-index: 1000;
+  flex-direction: column;
+  overflow: hidden;
+  font-family: -apple-system, "Segoe UI", sans-serif;
+}
+
+.bg-setting-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 14px;
+  background: #f5f7fa;
+  border-bottom: 1px solid #e4e7eb;
+  font-weight: 600;
+  font-size: 14px;
+  color: #1f2329;
+}
+
+.bg-setting-close {
+  border: none;
+  background: transparent;
+  font-size: 20px;
+  line-height: 1;
+  color: #8a9099;
+  cursor: pointer;
+  padding: 0 4px;
+  border-radius: 4px;
+}
+.bg-setting-close:hover { background: #ffe0e0; color: #d33; }
+
+.bg-setting-body {
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.bg-setting-button-row {
+  display: flex;
+  gap: 8px;
+}
+
+.bg-setting-choose {
+  flex: 1;
+  padding: 8px 14px;
+  border: 1px dashed #1976d2;
+  border-radius: 6px;
+  background: #e8f0fe;
+  color: #1976d2;
+  font-size: 13px;
+  cursor: pointer;
+  transition: background .15s;
+}
+.bg-setting-choose:hover { background: #d4e4fc; }
+
+.bg-setting-preview-area {
+  width: 100%;
+  height: 120px;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  background: #f9f9f9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.bg-setting-preview {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+.bg-setting-preview-placeholder {
+  color: #999;
+  font-size: 13px;
+}
+
+.bg-setting-opacity-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: #555;
+}
+
+.bg-setting-opacity-value {
+  min-width: 40px;
+  font-weight: 600;
+  color: #1976d2;
+}
+
+.bg-setting-opacity {
+  flex: 1;
+  cursor: pointer;
+}
+
+.bg-setting-clear {
+  flex-shrink: 0;
+  white-space: nowrap;
+  padding: 8px 12px;
+  border: 1px solid #d33;
+  border-radius: 6px;
+  background: #fff;
+  color: #d33;
+  font-size: 13px;
+  cursor: pointer;
+  transition: background .15s;
+}
+.bg-setting-clear:hover { background: #ffe0e0; }
+
+/* ========== 一键关闭提示层 ========== */
+.one-click-close-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.55);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.one-click-close-card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 28px 36px;
+  box-shadow: 0 12px 40px rgba(0,0,0,.3);
+  text-align: center;
+  max-width: 90%;
+}
+.one-click-close-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: #1f2329;
+  margin-bottom: 10px;
+}
+.one-click-close-desc {
+  font-size: 14px;
+  color: #6b7280;
+  line-height: 1.6;
+}

@@ -1,0 +1,63 @@
+#bottom-toolbar {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 15;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 16px;
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0,0,0,.15);
+  user-select: none;
+}
+
+.toolbar-btn {
+  width: 44px;
+  height: 44px;
+  border: none;
+  border-radius: 10px;
+  background: transparent;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background .15s;
+  color: #666;
+  font-size: 22px;
+}
+
+.toolbar-btn:hover {
+  background: #f0f0f0;
+}
+
+.toolbar-btn.active {
+  background: #e3f2fd;
+  color: #1976d2;
+}
+
+.toolbar-btn svg {
+  width: 24px;
+  height: 24px;
+  pointer-events: none;
+}
+
+.toolbar-divider {
+  width: 1px;
+  height: 28px;
+  background: #e0e0e0;
+}
+
+.canvas-node.dragging {
+  opacity: .8;
+  box-shadow: 0 8px 30px rgba(0,0,0,.2);
+}
+
+/* 移动模式：覆盖节点内的光标 */
+body.move-mode .canvas-node,
+body.move-mode .node-content {
+  cursor: move !important;
+}

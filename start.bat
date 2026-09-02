@@ -1,0 +1,9 @@
+@echo off
+cd /d "%~dp0"
+echo Starting frontend server on port 8080 ...
+start "frontend-8080" python server.py
+echo Starting AI proxy on port 5000 ...
+start "ai-proxy-5000" python Node\AI\local_agent\ai_proxy.py
+timeout /t 2 /nobreak >nul
+echo Opening browser ...
+start http://localhost:8080/infinite_canvas.html

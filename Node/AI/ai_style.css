@@ -1,0 +1,222 @@
+/* AI 自由对话框样式
+   定位：fixed（屏幕坐标，不随画布缩放移动）
+   层级：高于节点和侧边栏，低于右键菜单 */
+
+.ai-dialog {
+  position: fixed;
+  top: 32px;
+  right: 32px;
+  width: 380px;
+  height: 480px;
+  min-width: 280px;
+  min-height: 200px;
+  background: #fff;
+  border: 1px solid #d0d0d0;
+  border-radius: 10px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, .18);
+  display: flex;
+  flex-direction: column;
+  z-index: 1000;
+  overflow: hidden;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: 14px;
+}
+
+/* 标题栏（可拖动） */
+.ai-dialog-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  background: #f5f7fa;
+  border-bottom: 1px solid #e4e7eb;
+  cursor: move;
+  user-select: none;
+}
+
+.ai-dialog-title {
+  font-weight: 600;
+  color: #1f2329;
+  font-size: 13px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ai-dialog-close {
+  border: none;
+  background: transparent;
+  font-size: 20px;
+  line-height: 1;
+  color: #8a9099;
+  cursor: pointer;
+  padding: 0 4px;
+  border-radius: 4px;
+  transition: background .15s, color .15s;
+}
+
+.ai-dialog-close:hover {
+  background: #ffe0e0;
+  color: #d33;
+}
+
+/* 消息列表区（可滚动） */
+.ai-dialog-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  background: #fafbfc;
+}
+
+.ai-dialog-messages::-webkit-scrollbar {
+  width: 6px;
+}
+
+.ai-dialog-messages::-webkit-scrollbar-thumb {
+  background: #c8ccd1;
+  border-radius: 3px;
+}
+
+/* 消息气泡 */
+.ai-msg {
+  max-width: 85%;
+  padding: 8px 12px;
+  border-radius: 10px;
+  word-wrap: break-word;
+  white-space: pre-wrap;
+  line-height: 1.5;
+}
+
+/* 用户消息：靠右，蓝色 */
+.ai-msg-user {
+  align-self: flex-end;
+  background: #1976d2;
+  color: #fff;
+  border-bottom-right-radius: 3px;
+}
+
+/* AI 消息：靠左，灰色 */
+.ai-msg-ai {
+  align-self: flex-start;
+  background: #fff;
+  color: #1f2329;
+  border: 1px solid #e4e7eb;
+  border-bottom-left-radius: 3px;
+}
+
+/* 系统消息：居中，淡灰色小字（路径检测提示、未设置 api 等，不存进节点） */
+.ai-msg-system {
+  align-self: center;
+  background: transparent;
+  color: #999;
+  font-size: 12px;
+  padding: 3px 8px;
+  text-align: center;
+  line-height: 1.4;
+}
+
+/* 输入区 */
+.ai-dialog-input-area {
+  display: flex;
+  gap: 8px;
+  padding: 10px 14px;
+  border-top: 1px solid #e4e7eb;
+  background: #fff;
+}
+
+.ai-dialog-input {
+  flex: 1;
+  resize: none;
+  border: 1px solid #d0d0d0;
+  border-radius: 6px;
+  padding: 8px 10px;
+  font-family: inherit;
+  font-size: 13px;
+  line-height: 1.5;
+  outline: none;
+  transition: border-color .15s;
+}
+
+.ai-dialog-input:focus {
+  border-color: #1976d2;
+}
+
+.ai-dialog-send {
+  align-self: stretch;
+  padding: 0 16px;
+  border: none;
+  border-radius: 6px;
+  background: #1976d2;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background .15s;
+}
+
+.ai-dialog-send:hover {
+  background: #1565c0;
+}
+
+.ai-dialog-send:active {
+  background: #0d47a1;
+}
+
+/* AI 开关指示灯（标题栏右侧，T 键切换） */
+.ai-dialog-header-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ai-proxy-switch {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 8px 3px 6px;
+  border-radius: 12px;
+  background: #eef1f4;
+  cursor: pointer;
+  user-select: none;
+  transition: background .15s;
+}
+
+.ai-proxy-switch:hover {
+  background: #e2e6eb;
+}
+
+.ai-proxy-light {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #4caf50;
+  box-shadow: 0 0 6px rgba(76, 175, 80, 0.5);
+  transition: background .2s, box-shadow .2s;
+}
+
+.ai-proxy-light[data-state="off"] {
+  background: #b0b6bd;
+  box-shadow: none;
+}
+
+.ai-proxy-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: #5a6370;
+  letter-spacing: 0.5px;
+}
+
+/* 右下角缩放手柄 */
+.ai-dialog-resizer {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 16px;
+  height: 16px;
+  cursor: nwse-resize;
+  background: linear-gradient(135deg, transparent 50%, #b0b6bd 50%);
+  border-bottom-right-radius: 10px;
+}
